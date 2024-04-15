@@ -24,7 +24,10 @@ class CustomCSVLoader(BaseLoader):
             csv_reader = csv.DictReader(csvfile, **self.csv_args)  # type: ignore
             for i, row in enumerate(csv_reader):
                 metadata = {
-                    k.strip(): (v.strip() if isinstance(v, str) else "") if v is not None else ""
+                    if v is None or k is None :
+                        print(f"Encountered None value for key {k} or {v}")
+                    else:
+                        metadata[k.strip()] = v.strip()
                     for k, v in row.items()
                     if k != self.source_column
                 }
