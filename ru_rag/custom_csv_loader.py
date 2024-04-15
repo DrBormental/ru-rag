@@ -18,29 +18,27 @@ class CustomCSVLoader(BaseLoader):
         self.encoding = encoding
         self.csv_args = csv_args or {}
 
-    def load(self) -> List[Document]:
-        docs = []
-        with open(self.file_path, newline="", encoding=self.encoding) as csvfile:
-            csv_reader = csv.DictReader(csvfile, **self.csv_args)  # type: ignore
-            for i, row in enumerate(csv_reader):
-                metadata = {
-                    if v is None or k is None :
-                        print(f"Encountered None value for key {k} or {v}")
-                    else:
-                        metadata[k.strip()] = v.strip()
-                    for k, v in row.items()
-                    if k != self.source_column
-                }
-                metadata["row"] = i
-                metadata["file_path"] = self.file_path
-                try:
-                    docs.append(
-                        Document(
-                            page_content=row[self.source_column], metadata=metadata
-                        )
+def load(self) -> List[Document]:
+    docs = []
+    with open(self.file_path, newline="", encoding=self.encoding) as csvfile:
+        csv_reader = csv.DictReader(csvfile, **self.csv_args)  # type: ignore
+        for i, row in enumerate(csv_reader):
+            metadata = {}
+            for k, v in row.items():
+                if v is None or k is None:
+                    print(f"Encountered None value for key {k} or {v}")
+                else:
+                    metadata[k.strip()] = v.strip()
+            metadata["row"] = i
+            metadata["file_path"] = self.file_path
+            try:
+                docs.append(
+                    Document(
+                        page_content=row[self.source_column], metadata=metadata
                     )
-                except KeyError:
-                    raise ValueError(
-                        f"Source column '{self.source_column}' not found in CSV file."
-                    )
-        return docs
+                )
+            except KeyError:
+                raise ValueError(
+                    f"Source column '{self.source_column}' not found in CSV file."
+                )
+    return docs
