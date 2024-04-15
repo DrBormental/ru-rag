@@ -24,7 +24,7 @@ class CustomCSVLoader(BaseLoader):
             csv_reader = csv.DictReader(csvfile, **self.csv_args)  # type: ignore
             for i, row in enumerate(csv_reader):
                 metadata = {
-                    k.strip(): v.strip()
+                    k.strip(): v.strip() if isinstance(v, str) else ""
                     for k, v in row.items()
                     if k != self.source_column
                 }
